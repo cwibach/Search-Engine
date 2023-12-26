@@ -18,20 +18,29 @@ All programs are inside the src folder. All java files should be compiled before
 javac ResultScore.java
 javac InvertedMethods.java
 javac MeasureCalculations.java
+javac MemoryCalculations.java
 javac PorterStemmer.java
+javac AverageAccuracy.java
 javac GetFile.java
 javac IndexEngine.java
 javac EvalScore.java
+javac BooleanAND.java
 javac BM25.java
+javac CosineSearch.java
+javac ParameterSweep.java
 javac SearchBM25.java
+javac SearchBAND.java
+javac SearchCosine.java
 ```
 
 ## Running Key Programs ##
-For running search from the command line, only two of the programs need to be run: IndexEngine.java & SearchBM25.java, in this order
+For running search from the command line, only two of the programs need to be run: IndexEngine.java & the chosen searching program (SearchBM25.java, SearchBAND.java, or SearchCosine.java), in this order
 For running the program, it is best to navigate to the same folder as for compiling the programs, "src".
 
 
 ### IndexEngine.java ###
+IndexEngine needs a compressed .gz file to run and create the inverted index. It was created with LAtimes data for testing, but this was only used for the course and is not able to be shared. If you wish to test the code, it is recommended that an appropriate file with documents for searching is obtained first. This program does the inversion in memory, and is designed for collections of around 100-200 thousand documents, more and it may cause issues due to memory restrictions and take a very long time.
+
 IndexEngine.java takes 2 to 4 arguments, any less than 2 and the program will inform the user of the error, the third and fourth arguments are optional parameters.
 1. The compressed .gz file to read in's location, file must exist and be in .gz format
 2. The directory to create all documents and files in, directory must not already exist
@@ -52,8 +61,8 @@ java IndexEngine.java "C:\Users\carte\Documents\Search Engines\latimes.gz" "C:\U
 
 This program takes some time to run, so please be patient as it has to go through the full document creating many documents and folders.
 
-### SearchBM25.java ###
-SearchBM25.java takes 1 argument only, this is the directory where all files are created with the inverted index (same as 2nd arg in IndexEngine.java) Any less and the user will be informed of the error.
+### SearchBM25.java, SearchBAND.java, SearchCosine.java ###
+These programs take 1 argument only, this is the directory where all files are created with the inverted index (same as 2nd arg in IndexEngine.java) Any less and the user will be informed of the error.
 
 ``` bash
 java SearchBM25.java "C:\users\carte\documents\search engines\latimes docs"
@@ -74,6 +83,7 @@ After the search is returned the user is provided 3 options:
 
 These are all case-insensitive, and the system will help the user if they mistype or forget. After retrieving one of the docs they will be given the opportunity to choose another option.
 If the user types a query with no results, or with no query terms, an error message will inform them and they will be prompted for a new query or to continue otherwise.
+
 
 ## Other Programs ##
 Other programs are also included due to having pre-created methods, and allowing more future functionality if desired.
@@ -98,6 +108,22 @@ java GetFile.java "C:\Users\carte\Documents\Search Engines\latimes docs" docno L
 
 This program will return the metadata (id, docno, date, headline) as well as the full document (including all tags) to the command line
 
+### BooleanAND.java ###
+BooleanAND.java takes 3 or 4 arguments, the first 3 are required and will result in errors if not provided, the 4th is optional.
+1. The folder location with the created inverted index & lexicon
+2. The file location with the search terms
+3. The file location to write search results to
+4. The word "stem" if the search query should be stemmed (case-insensitive)
+
+If there is user input error, an error message will be presented to the user indicating the problem with their input as well as showing what they inputted that caused the problem. This includes error such as invalid folder or file paths. The paths used as samples may not work on your computer, so please ensure the directories and file names match what is used on your device.
+
+```bash
+java BooleanAND.java "C:\Users\carte\Documents\Search Engines\latimes docs" "C:\Users\carte\Documents\Search Engines\SearchQueriesFull.txt" "C:\Users\carte\Documents\Search Engines\hw4\results\BAND-results.txt"
+
+java BooleanAND.java "C:\Users\carte\Documents\Search Engines\stem latimes docs" "C:\Users\carte\Documents\Search Engines\SearchQueriesFull.txt" "C:\Users\carte\Documents\Search Engines\hw4\results\BAND-results-stem.txt" STEM
+```
+Search results are written to the provided file name in the same folder as the found inverted index and lexicon. They are written in the TREC file format, with each line of results consisting of: Query id, Q0, Docno, Rank, Score, and useridAND, where the userid is my student WatIam login. The ranks increase by 1, and the scores decrease by 1 with each result for a query, with the first being ranked 1, and the last being scored 1.
+
 ### BM25.java ###
 BM25.java takes 3 to 6 arguments, the first 3 are required and will result in errors if not provided, the 4th through 6th are optional.
 1. The folder location with the created inverted index & lexicon
@@ -115,6 +141,22 @@ java BM25.java "C:\Users\carte\Documents\Search Engines\latimes docs" "C:\Users\
 java BM25.java "C:\Users\carte\Documents\Search Engines\latimes docs" "C:\Users\carte\Documents\Search Engines\SearchQueriesFull.txt" "C:\Users\carte\Documents\Search Engines\hw4\results\BM25-k1-1.3-b-0.6-results.txt" 1.3 0.6
 
 java BM25.java "C:\Users\carte\Documents\Search Engines\stem latimes docs" "C:\Users\carte\Documents\Search Engines\SearchQueriesFull.txt" "C:\Users\carte\Documents\Search Engines\hw4\results\BM25-default-stem-results.txt" null null stem
+```
+Search results are written to the provided file name in the same folder as the found inverted index and lexicon. They are written in the TREC file format, with each line of results consisting of: Query id, Q0, Docno, Rank, Score, and useridAND, where the userid is my student WatIam login. The ranks increase by 1, and the scores decrease by 1 with each result for a query, with the first being ranked 1, and the last being scored 1.
+
+### CosineSearch.java ###
+CosineSearch.java takes 3 or 4 arguments, the first 3 are required and will result in errors if not provided, the 4th is optional.
+1. The folder location with the created inverted index & lexicon
+2. The file location with the search terms
+3. The file location to write search results to
+4. The word "stem" if the search query should be stemmed (case-insensitive)
+
+If there is user input error, an error message will be presented to the user indicating the problem with their input as well as showing what they inputted that caused the problem. This includes error such as invalid folder or file paths. The paths used as samples may not work on your computer, so please ensure the directories and file names match what is used on your device.
+
+```bash
+java CosineSearch.java "C:\Users\carte\Documents\Search Engines\latimes docs" "C:\Users\carte\Documents\Search Engines\SearchQueriesFull.txt" "C:\Users\carte\Documents\Search Engines\hw4\results\cosine-results.txt"
+
+java BooleanAND.java "C:\Users\carte\Documents\Search Engines\stem latimes docs" "C:\Users\carte\Documents\Search Engines\SearchQueriesFull.txt" "C:\Users\carte\Documents\Search Engines\hw4\results\cosine-results-stem.txt" STEM
 ```
 Search results are written to the provided file name in the same folder as the found inverted index and lexicon. They are written in the TREC file format, with each line of results consisting of: Query id, Q0, Docno, Rank, Score, and useridAND, where the userid is my student WatIam login. The ranks increase by 1, and the scores decrease by 1 with each result for a query, with the first being ranked 1, and the last being scored 1.
 
@@ -146,6 +188,48 @@ java EvalScore.java "C:\Users\carte\Documents\Search Engines\hw3\hw3-files-2023\
 java EvalScore.java "C:\Users\carte\Documents\Search Engines\hw3\hw3-files-2023\results-files\student11.results" "C:\Users\carte\Documents\Search Engines\hw3\hw3-files-2023\qrels\qrels.txt" "C:\Users\carte\Documents\Search Engines\hw3\test1.txt" all
 ```
 
+### MemoryCalculations.java ###
+This program provides numeric values so Memory usage when running program can be calculated. It takes 2 arguments, which are both mandatory.
+1. The value(s) to print, must be one of the following options: NumDocs, NumWords, AvgDocs, All (case-insensitive)
+2. The folder location with the created inverted index & lexicon
+
+If there are errors in input, such as none of the calculation types being provided or the file location not existing, the program will print an error message and exit.
+
+The options for values to return work as following:
+NumDocs: Prints the total number of documents in the collection
+NumWords: Prints the total number of unique words/terms/tokens in the collection
+AvgDocs: Prints the average number of docs containing each word (avg length of inverted index / 2)
+All: Prints all 3 of the above values
+
+These are all printed to the command line on their own line with phrasing the user understands what each value is.
+
+``` bash
+java MemoryCalculations.java all "C:\Users\carte\Documents\Search Engines\latimes docs"
+
+java MemoryCalculations.java AvgDocs "C:\Users\carte\Documents\Search Engines\stem latimes docs"
+```
+### ParameterSweep.java ###
+This program performs a sweep of BM25 parameter values for b-values from 0 to 1 on intervals of 0.05, and k1 values from 0 to 10 on intervals of 0.1. It measures the NDCG@10 for each run and averages the accuracy for each run in one output file as well as producing all of the result files and evaluation files. It takes 4 mandatory arguments, and up to 6 optional ones
+1. The path for the inverted index to use for the searching
+2. The qrels file to judge accuracy with
+3. The queries file to perform searches with
+4. The base path to construct new files in
+5. The k1 value to start at, requires double value, defaults to 0.0 if invalid or missing
+6. The b value to start at, requires double value between 0 and 1, defaults to 0.0 if invalid or missing
+7. The k1 value to end at, requires double value, defaults to 10.0 if invalid or missing
+8. The b value to end at, requires double value between 0 and 1, defaults to 1.0 if invalid or missing
+9. The increment to increase k1 by, requires double value, defaults to 0.1 if invalid or missing
+10. The increment to increase b by, requires double value, defaults to 0.05 if invalid or missing
+
+If there are errors in input such as insufficient arguments or missing files, the program will print an error and exit.
+
+``` bash
+java ParameterSweep.java "C:\users\carte\Documents\Search Engines\latimes docs" "C:\Users\carte\Documents\Search Engines\hw3\hw3-files-2023\qrels\qrels.txt" "C:\Users\carte\Documents\Search Engines\SearchQueriesFull.txt" "C:\Users\carte\Documents\Search Engines\hw4\sweep test"
+
+java ParameterSweep.java "C:\users\carte\Documents\Search Engines\latimes docs" "C:\Users\carte\Documents\Search Engines\hw3\hw3-files-2023\qrels\qrels.txt" "C:\Users\carte\Documents\Search Engines\SearchQueriesFull.txt" "C:\Users\carte\Documents\Search Engines\hw4\sweep test" 1 0.3 4 0.8 0.5 0.02
+```
+This code takes a very long time to run (>60 minutes), so be warned, or change starting/ending b and k1 values before running.
+
 ### InvertedMethods.java ###
 This program is not meant to be run from the command line and only includes methods used for the construction and use of the inverted index and lexicon.
 
@@ -157,3 +241,6 @@ This program is not meant to be run from the command line and only includes meth
 
 ### PorterStemmer.java ###
 This program is not meant to be run from the command line and only includes methods for stemming tokens with the porter stemmer.
+
+### AverageAccuracy.java ###
+This program is not meant to be run from the command line and only includes methods for calculating average accuracy from an evaluation file
