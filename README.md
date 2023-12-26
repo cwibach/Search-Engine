@@ -8,7 +8,7 @@ Java is needed to run the program. No external libraries need to be installed.
 Cloning the repository allows the programs to be run locally from the command line.
 
 ```bash
-git clone https://github.com/UWaterloo-MSCI-541/msci-541-f23-hw5-cwibach.git
+git clone https://github.com/cwibach/Search-Engine.git
 ```
 
 ## Compiling Programs ##
