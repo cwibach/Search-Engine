@@ -142,8 +142,8 @@ public class CosineSearch {
 		// get all docnos
 		ArrayList<String> allDocnos = InvertedMethods.readDocnosList(retrievePath);
 		
-		// get all doc lengths
-		ArrayList<Integer> allDocLengths = InvertedMethods.readDocLengths(retrievePath);
+		// get all document vector norms (L2 lengths) for cosine normalization
+		ArrayList<Double> allDocLengths = InvertedMethods.readDocVectorLengths(retrievePath);
 		
 		int numDocs = allDocnos.size();
 		
@@ -194,7 +194,7 @@ public class CosineSearch {
 	}
 	
 	public static void termCosine(ArrayList<Integer> queryDocs, int numDocs, 
-			ArrayList<Integer> docLengths, HashMap<Integer, Double> docScores) {
+			ArrayList<Double> docLengths, HashMap<Integer, Double> docScores) {
 		/*
 		 * Calculate cosine value for document term
 		 * Use list of documents from inverted index, total number of docs
@@ -206,10 +206,10 @@ public class CosineSearch {
 		while (index < queryDocs.size()) { // for each doc with term
 			int docID = queryDocs.get(index); // get id
 			int termCount = queryDocs.get(index+1); // get term frequency
-			int docLength = docLengths.get(docID); // get doc lengths
+			double docLength = docLengths.get(docID); // precomputed L2 norm
 			
-			// calculate cosine value
-			double fullValue = (1+ Math.log(termCount))*Math.log(1 + ((double)numDocs / (double)numWithTerm))/(double)docLength;
+			// calculate cosine contribution for this term; denominator is vector length
+			double fullValue = (1+ Math.log(termCount))*Math.log(1 + ((double)numDocs / (double)numWithTerm)) / docLength;
 			
 			// if document already in dictionary, add to score
 			if (docScores.containsKey(docID)) {
