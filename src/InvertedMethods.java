@@ -361,4 +361,33 @@ public class InvertedMethods{
 		
 		return allDocLengths;
 	}
+
+	public static ArrayList<Double> readDocVectorLengths(String retrievePath) throws IOException {
+		/*
+		 * read the file we created in IndexEngine containing the L2 norm
+		 * of every document vector.  This is what cosine search needs for
+		 * normalization.  We keep the old integer-length reader untouched
+		 * for BM25 and other algorithms that still depend on raw token counts.
+		 */
+		ArrayList<Double> allDocLengths = new ArrayList<Double>();
+		String path = retrievePath + "\\alldocnorms.txt";
+		File f = null;
+		BufferedReader reader = null;
+		try {
+			f = new File(path);
+			reader = new BufferedReader(new FileReader(f));
+		} catch (FileNotFoundException e) {
+			System.out.println("Error: norm file not found");
+			System.out.println("Run IndexEngine first or check path: " + retrievePath);
+			System.exit(0);
+		}
+		while (true) {
+			String line = reader.readLine();
+			if (line == null) break;
+			allDocLengths.add(Double.parseDouble(line));
+		}
+		reader.close();
+		return allDocLengths;
+	}
+
 }

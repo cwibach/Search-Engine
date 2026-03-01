@@ -225,6 +225,37 @@ public class IndexEngine {
 			reverseLexicon.put(lexicon.get(token), token);
 		}
 		
+		// at this point the inverted index is complete and we know how many
+		// documents (internalID) were indexed.  We can therefore compute the
+		// L2 norm of each document vector using the same tf-idf weighting that
+		// we use during search.  Previously we wrote the raw token count to the
+		// "alldoclengths.txt" file; that value is *not* a proper cosine
+		// normalization factor, which is why cosine results were incorrect.
+		int numDocsFinal = internalID;
+		double[] vectorLengths = new double[numDocsFinal];
+		for (int termID = 0; termID < invertedIndex.size(); termID++) {
+			ArrayList<Integer> posting = invertedIndex.get(termID);
+			int df = posting.size() / 2;
+			if (df == 0) continue;
+			double idf = Math.log(1 + ((double)numDocsFinal / (double)df));
+			for (int k = 0; k < posting.size(); k += 2) {
+				int docID = posting.get(k);
+				int tf = posting.get(k+1);
+				double tfWeight = 1 + Math.log(tf);
+				double w = tfWeight * idf;
+				vectorLengths[docID] += w*w;
+			}
+		}
+		for (int i = 0; i < vectorLengths.length; i++) {
+			vectorLengths[i] = Math.sqrt(vectorLengths[i]);
+		}
+		// write normalized lengths to separate file for cosine search
+		FileWriter writeVec = new FileWriter(writeDestination + "\\alldocnorms.txt");
+		for (double len : vectorLengths) {
+			writeVec.write(len + "\n");
+		}
+		writeVec.close();
+		
 		// create new file for lexicon
 		FileWriter writeLexicon = new FileWriter(writeDestination + "\\lexicondoc.txt");
 		
